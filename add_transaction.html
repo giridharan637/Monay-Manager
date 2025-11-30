@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Add Transaction{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card p-3">
+      <h5>{{ 'Edit Transaction' if edit else 'Add Transaction' }}</h5>
+      <form method="post">
+        <div class="mb-2">
+          <label>Type</label>
+          <select name="type" class="form-select">
+            <option value="expense" {% if edit and edit.type=='expense' %}selected{% endif %}>Expense</option>
+            <option value="income" {% if edit and edit.type=='income' %}selected{% endif %}>Income</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label>Date</label>
+          <input name="date" class="form-control" type="date" value="{{ edit.date if edit else '' }}">
+        </div>
+        <div class="mb-2">
+          <label>Category</label>
+          <select name="category" class="form-select">
+            {% for cat in categories %}
+              <option value="{{cat}}" {% if edit and edit.category==cat %}selected{% endif %}>{{cat}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-2">
+          <label>Amount</label>
+          <div class="input-group">
+            <input name="amount" class="form-control" type="number" step="0.01" value="{{ edit.amount if edit else '' }}">
+            <button type="button" class="btn btn-outline-secondary" id="calcBtn">Calc</button>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label>Description</label>
+          <input name="description" class="form-control" value="{{ edit.description if edit else '' }}">
+        </div>
+        <button class="btn btn-success">Save</button>
+        <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Calculator modal -->
+<div class="modal fade" id="calcModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <h5>Calculator</h5>
+      <input id="calcInput" class="form-control mb-2" placeholder="Type expression, e.g., 120+30-10">
+      <button id="calcEval" class="btn btn-primary mb-2">Evaluate</button>
+      <div>Result: <span id="calcResult">0</span></div>
+      <button class="btn btn-secondary mt-2" data-bs-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('calcBtn').addEventListener('click', function(){
+  var modal = new bootstrap.Modal(document.getElementById('calcModal'));
+  modal.show();
+});
+document.getElementById('calcEval').addEventListener('click', function(){
+  try{
+    var expr = document.getElementById('calcInput').value;
+    var res = Function('"use strict";return ('+expr+')')();
+    document.getElementById('calcResult').innerText = res;
+    // put into amount field
+    document.querySelector('input[name="amount"]').value = res;
+  } catch(e){
+    document.getElementById('calcResult').innerText = 'Error';
+  }
+});
+</script>
+{% endblock %}

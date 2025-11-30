@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <div class="card p-3 mb-3">
+      <h4>Welcome, {{ username }}</h4>
+      <p>Balance: <strong>₹{{ '%.2f'|format(summary.balance) }}</strong></p>
+      <div class="d-flex gap-2">
+        <a class="btn btn-primary" href="{{ url_for('add') }}">Add Transaction</a>
+        <a class="btn btn-secondary" href="{{ url_for('transactions') }}">View Transactions</a>
+        <a class="btn btn-outline-success" href="{{ url_for('analytics') }}">Analytics</a>
+        <a class="btn btn-outline-dark" href="{{ url_for('export_csv') }}">Export CSV</a>
+      </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h5>Recent Transactions</h5>
+      <table class="table table-sm">
+        <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th></tr></thead>
+        <tbody>
+        {% for r in recent %}
+          <tr>
+            <td>{{ r.date }}</td>
+            <td>{{ r.type }}</td>
+            <td>{{ r.category }}</td>
+            <td>{{ r.amount }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card p-3 mb-3">
+      <h6>Summary</h6>
+      <p>Total Income: ₹{{ '%.2f'|format(summary.income) }}</p>
+      <p>Total Expense: ₹{{ '%.2f'|format(summary.expense) }}</p>
+      <p>Balance: ₹{{ '%.2f'|format(summary.balance) }}</p>
+    </div>
+    <div class="card p-3">
+      <h6>Quick Categories</h6>
+      <ul class="list-unstyled">
+      {% for c in ["Food","Transport","Education","Social"] %}
+        <li>{{ c }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

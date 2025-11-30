@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h6>Monthly Income vs Expense</h6>
+      <canvas id="monthlyChart" height="200"></canvas>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h6>Category Breakdown (Expenses)</h6>
+      <canvas id="pieChart" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+fetch("{{ url_for('api_monthly') }}").then(r=>r.json()).then(data=>{
+  const ctx = document.getElementById('monthlyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [
+        {label:'Income', data:data.income, borderColor:'green', fill:false},
+        {label:'Expense', data:data.expense, borderColor:'red', fill:false}
+      ]
+    }
+  });
+});
+
+fetch("{{ url_for('api_categories') }}").then(r=>r.json()).then(data=>{
+  const ctx2 = document.getElementById('pieChart').getContext('2d');
+  new Chart(ctx2, {
+    type:'pie',
+    data:{
+      labels: data.labels,
+      datasets:[{data:data.values, backgroundColor: ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc949','#b07aa1']}]
+    }
+  });
+});
+</script>
+{% endblock %}
